@@ -65,9 +65,9 @@ Example:
 
 - Read-only: runs `ss -tlnp` and reads `/proc/<pid>/cwd` and
   `/proc/<pid>/cmdline` for your own processes.
-- The stop action sends SIGTERM to the selected PID only; it never uses
-  `sudo`, so servers owned by root (e.g. Docker's `docker-proxy`) are not
-  listed and cannot be stopped.
+- The stop action sends SIGTERM to the selected PID only and runs with your
+  normal user rights, so servers owned by root (e.g. Docker's
+  `docker-proxy`) are not listed and cannot be stopped.
 - Writes no files and never touches packaged Omarchy files.
 
 ## Development
