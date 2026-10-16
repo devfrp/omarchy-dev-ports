@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "id": "devfrp.dev-ports",
+  "name": "Dev Ports",
+  "version": "1.0.0",
+  "author": "devfrp",
+  "license": "MIT",
+  "homepage": "https://github.com/devfrp/omarchy-dev-ports",
+  "description": "Local dev servers listening on TCP ports: open, copy URL, or stop them from the bar.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Dev Ports",
+    "description": "List local dev servers with open, copy and stop actions.",
+    "category": "Developer Tools",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "refreshIntervalSec": 5,
+      "maxPort": 32767,
+      "hideWhenEmpty": true,
+      "ignore": "Discord,kdeconnectd,wayvnc,steam,spotify,cupsd"
+    },
+    "schema": [
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Refresh interval (seconds)",
+        "min": 2,
+        "max": 600,
+        "step": 1,
+        "defaultValue": 5
+      },
+      {
+        "key": "maxPort",
+        "type": "integer",
+        "label": "Ignore ports above",
+        "min": 1024,
+        "max": 65535,
+        "step": 1,
+        "defaultValue": 32767
+      },
+      {
+        "key": "hideWhenEmpty",
+        "type": "boolean",
+        "label": "Hide when no server is running",
+        "defaultValue": true
+      },
+      {
+        "key": "ignore",
+        "type": "string",
+        "label": "Ignored process names (comma-separated)",
+        "defaultValue": "Discord,kdeconnectd,wayvnc,steam,spotify,cupsd"
+      }
+    ]
+  }
+}

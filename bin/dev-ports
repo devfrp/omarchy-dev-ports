@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Lists TCP listeners owned by the current user as a JSON array.
+# Usage: dev-ports [ignored,process,names] [max-port]
+
+ignore=",${1:-},"
+max_port="${2:-32767}"
+
+ss -tlnpH 2>/dev/null | while read -r _ _ _ local _ proc; do
+  [[ $proc =~ \(\(\"([^\"]+)\",pid=([0-9]+) ]] || continue
+  name="${BASH_REMATCH[1]}"
+  pid="${BASH_REMATCH[2]}"
+  port="${local##*:}"
+  addr="${local%:*}"
+  addr="${addr%%%*}"
+  addr="${addr#[}"; addr="${addr%]}"
+
+  [[ $ignore == *",$name,"* ]] && continue
+  (( port > max_port )) && continue
+
+  case "$addr" in
+    127.*|::1|localhost) scope=local ;;
+    0.0.0.0|::|\*) scope=all ;;
+    *) scope=iface ;;
+  esac
+
+  cwd="$(readlink "/proc/$pid/cwd" 2>/dev/null)"
+  cmd="$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null | cut -c1-200)"
+
+  jq -cn --arg name "$name" --argjson pid "$pid" --argjson port "$port" \
+    --arg addr "$addr" --arg scope "$scope" --arg cwd "$cwd" --arg cmd "$cmd" \
+    '{name:$name,pid:$pid,port:$port,addr:$addr,scope:$scope,cwd:$cwd,cmd:$cmd}'
+done | jq -s 'group_by(.port) | map(
+  (map(select(.scope == "all")) + map(select(.scope == "iface")) + .)[0]
+) | sort_by(.port)'
